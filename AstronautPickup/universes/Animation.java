@@ -1,6 +1,7 @@
 
 public interface Animation {
 	
-	public Universe getNextUniverse();	
-
+	public Universe getCurrentUniverse();
+	public Universe getNextUniverse();
+	
 }

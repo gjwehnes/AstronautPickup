@@ -1,7 +1,8 @@
 
 public class AstronautPickupAnimation implements Animation {
 
-	private static int universeCount = 0;
+	private int universeCount = 0;
+	private Universe current = null;
 	private static int score = 0;
 	
 	public static int getScore() {
@@ -16,25 +17,23 @@ public class AstronautPickupAnimation implements Animation {
 		AstronautPickupAnimation.score += score;
 	}
 
-	public static int getUniverseCount() {
-		return universeCount;
-	}
-
-	public static void setUniverseCount(int count) {
-		AstronautPickupAnimation.universeCount = count;
-	}
-
 	public Universe getNextUniverse() {
 
 		universeCount++;
 		
 		if (universeCount == 1) {
-			return new Level01Universe();
+			this.current = new Level01Universe();
 		}
 		else {
-			return null;
+			this.current = null;
 		}
+		
+		return this.current;
 
+	}
+
+	public Universe getCurrentUniverse() {
+		return this.current;
 	}
 	
 }

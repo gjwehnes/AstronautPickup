@@ -107,6 +107,10 @@ public class SpaceShipSprite implements DisplayableSprite {
 		return dispose;
 	}
 
+	public void setDispose(boolean dispose) {
+		this.dispose = dispose;
+	}	
+
 	public double getFuel() {
 		return fuel;
 	}

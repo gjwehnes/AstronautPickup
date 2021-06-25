@@ -97,6 +97,10 @@ public class BulletSprite implements DisplayableSprite {
 		return dispose;
 	}
 
+	public void setDispose(boolean dispose) {
+		this.dispose = dispose;
+	}	
+
 	public void update(Universe universe, KeyboardInput keyboard, long actual_delta_time) {
 		
 	    double movement_x = (this.velocityX * actual_delta_time * 0.001);

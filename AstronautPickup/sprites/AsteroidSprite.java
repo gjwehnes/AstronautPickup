@@ -101,7 +101,7 @@ public class AsteroidSprite implements DisplayableSprite, MovableSprite {
 	}
 	
 	public void setDispose(boolean dispose) {
-		this.dispose = true;
+		this.dispose = dispose;
 	}	
 
 	public void update(Universe universe, KeyboardInput keyboard, long actual_delta_time) {

@@ -8,33 +8,34 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.MouseMotionAdapter;
 
 
 public class AstronautPickupFrame extends JFrame {
 
-	final public static int FRAMES_PER_SECOND = 60;
-	final public static int SCREEN_HEIGHT = 750;
+	final public static int FRAMES_PER_SECOND = 60;	
+	final public static int SCREEN_HEIGHT = 750;	
 	final public static int SCREEN_WIDTH = 900;
 
-	private int xpCenter = SCREEN_WIDTH / 2;
-	private int ypCenter = SCREEN_HEIGHT / 2;
+	private int screenCenterX = SCREEN_WIDTH / 2;
+	private int screenCenterY = SCREEN_HEIGHT / 2;
 
 	private double scale = 1;
 	//point in universe on which the screen will center
-	private double xCenter = 0;		
-	private double yCenter = 0;
+	private double logicalCenterX = 0;		
+	private double logicalCenterY = 0;
 
-	private JPanel panel = null;
-	private JButton btnPauseRun;
-	private JLabel lblScoreLabel;
-	private JLabel lblScore;
-	private JLabel lblLevelLabel;
-	private JLabel lblLevel;
-	private JLabel lblAmmoLabel;
-	private JLabel lblHealthLabel;
-	private JLabel lblHealth;
-	private JLabel lblFuelLabel;
-	private JLabel lblFuel;
+	private JPanel panel = null;	
+	private JButton btnPauseRun;	
+	private JLabel lblScoreLabel;	
+	private JLabel lblScore;	
+	private JLabel lblLevelLabel;	
+	private JLabel lblLevel;	
+	private JLabel lblAmmoLabel;	
+	private JLabel lblHealthLabel;	
+	private JLabel lblHealth;	
+	private JLabel lblFuelLabel;	
+	private JLabel lblFuel;	
 	private JLabel lblAmmo;
 
 	private static boolean stop = false;
@@ -57,7 +58,7 @@ public class AstronautPickupFrame extends JFrame {
 	private Background background = null;
 	boolean centreOnPlayer = false;
 	int universeLevel = 0;
-
+	
 	public AstronautPickupFrame(Animation animation)
 	{
 		super("");
@@ -186,7 +187,7 @@ public class AstronautPickupFrame extends JFrame {
 		getContentPane().setComponentZOrder(lblFuel, 0);
 
 	}
-	
+
 	private void setBarLabelBounds(JLabel label, double percent) {
 
 		int minX = 189;
@@ -195,7 +196,7 @@ public class AstronautPickupFrame extends JFrame {
 		
 		label.setBounds(minX, minY,(int)(minX + (maxX - minX) * percent / 100) - minX, 14);
 	}
-
+	
 	public void start()
 	{
 		Thread thread = new Thread()
@@ -214,7 +215,7 @@ public class AstronautPickupFrame extends JFrame {
 	private void animationLoop() {
 
 		universe = animation.getNextUniverse();
-		universeLevel++ ;
+		universeLevel++;
 
 		while (stop == false && universe != null) {
 
@@ -223,8 +224,8 @@ public class AstronautPickupFrame extends JFrame {
 			background = universe.getBackground();
 			centreOnPlayer = universe.centerOnPlayer();
 			this.scale = universe.getScale();
-			this.xCenter = universe.getXCenter();
-			this.yCenter = universe.getYCenter();
+			this.logicalCenterX = universe.getXCenter();
+			this.logicalCenterY = universe.getYCenter();
 
 			// main game loop
 			while (stop == false && universe.isComplete() == false) {
@@ -255,13 +256,13 @@ public class AstronautPickupFrame extends JFrame {
 
 				//UPDATE STATE
 				updateTime();
+				
 				universe.update(keyboard, actual_delta_time);
 				updateControls();
 
 				//REFRESH
-				this.scale = universe.getScale();	
-				this.xCenter = universe.getXCenter();	
-				this.yCenter = universe.getYCenter();
+				this.logicalCenterX = universe.getXCenter();
+				this.logicalCenterY = universe.getYCenter();
 				this.repaint();
 			}
 
@@ -277,14 +278,13 @@ public class AstronautPickupFrame extends JFrame {
 	}
 
 	private void updateControls() {
-		this.lblLevel.setText(Integer.toString(universeLevel));
-		this.lblScore.setText(Integer.toString(AstronautPickupAnimation.getScore()));
 		
-		this.lblFuel.setText(String.format("%3.1f", player1.getFuel()));
-		setBarLabelBounds(this.lblFuel, player1.getFuel());
-		this.lblAmmo.setText(Integer.toString(player1.getAmmo()));
-		setBarLabelBounds(this.lblAmmo, player1.getAmmo() / (float)player1.getMaxAmmo() * 100);
-		this.lblHealth.setText(String.format("%3.2f", player1.getHealth()));
+		this.lblScore.setText(Integer.toString(AstronautPickupAnimation.getScore()));	
+		this.lblFuel.setText(String.format("%3.1f", player1.getFuel()));	
+		setBarLabelBounds(this.lblFuel, player1.getFuel());	
+		this.lblAmmo.setText(Integer.toString(player1.getAmmo()));	
+		setBarLabelBounds(this.lblAmmo, player1.getAmmo() / (float)player1.getMaxAmmo() * 100);	
+		this.lblHealth.setText(String.format("%3.2f", player1.getHealth()));	
 		setBarLabelBounds(this.lblHealth, player1.getHealth());
 	}
 
@@ -309,6 +309,7 @@ public class AstronautPickupFrame extends JFrame {
 	}
 
 	private void handleKeyboardInput() {
+		
 		if (keyboard.keyDown(80) && ! isPaused) {
 			btnPauseRun_mouseClicked(null);	
 		}
@@ -321,6 +322,20 @@ public class AstronautPickupFrame extends JFrame {
 		if (keyboard.keyDown(113)) {
 			scale /= 1.01;
 		}
+		
+		if (keyboard.keyDown(65)) {
+			screenCenterX -= 1;
+		}
+		if (keyboard.keyDown(68)) {
+			screenCenterX += 1;
+		}
+		if (keyboard.keyDown(83)) {
+			screenCenterY -= 1;
+		}
+		if (keyboard.keyDown(88)) {
+			screenCenterY += 1;
+		}
+		
 	}
 
 	class DrawPanel extends JPanel {
@@ -332,8 +347,8 @@ public class AstronautPickupFrame extends JFrame {
 			}
 
 			if (player1 != null && centreOnPlayer) {
-				xCenter = player1.getCenterX();
-				yCenter = player1.getCenterY();     
+				logicalCenterX = player1.getCenterX();
+				logicalCenterY = player1.getCenterY();     
 			}
 
 			paintBackground(g, background);
@@ -342,11 +357,11 @@ public class AstronautPickupFrame extends JFrame {
 				DisplayableSprite sprite = activeSprite;
 				if (sprite.getVisible()) {
 					if (sprite.getImage() != null) {
-						g.drawImage(sprite.getImage(), translateX(sprite.getMinX()), translateY(sprite.getMinY()), scaleX(sprite.getWidth()), scaleY(sprite.getHeight()), null);
+						g.drawImage(sprite.getImage(), translateToScreenX(sprite.getMinX()), translateToScreenY(sprite.getMinY()), scaleLogicalX(sprite.getWidth()), scaleLogicalY(sprite.getHeight()), null);
 					}
 					else {
 						g.setColor(Color.BLUE);
-						g.fillRect(translateX(sprite.getMinX()), translateY(sprite.getMinY()), scaleX(sprite.getWidth()), scaleY(sprite.getHeight()));
+						g.fillRect(translateToScreenX(sprite.getMinX()), translateToScreenY(sprite.getMinY()), scaleLogicalX(sprite.getWidth()), scaleLogicalY(sprite.getHeight()));
 					}
 				}
 
@@ -354,20 +369,6 @@ public class AstronautPickupFrame extends JFrame {
 
 		}
 		
-		private int translateX(double x) {
-			return xpCenter + scaleX(x - xCenter);
-		}
-		
-		private int scaleX(double x) {
-			return (int) Math.round(scale * x);
-		}
-		private int translateY(double y) {
-			return ypCenter + scaleY(y - yCenter);
-		}		
-		private int scaleY(double y) {
-			return (int) Math.round(scale * y);
-		}
-
 		private void paintBackground(Graphics g, Background background) {
 
 			if ((g == null) || (background == null)) {
@@ -375,11 +376,11 @@ public class AstronautPickupFrame extends JFrame {
 			}
 			
 			//what tile covers the top-left corner?
-			double xTopLeft = ( xCenter - (xpCenter / scale));
-			double yTopLeft =  (yCenter - (ypCenter / scale)) ;
+			double logicalLeft = ( logicalCenterX - (screenCenterX / scale));
+			double logicalTop =  (logicalCenterY - (screenCenterY / scale)) ;
 			
-			int row = background.getRow((int)yTopLeft);
-			int col = background.getCol((int)xTopLeft);
+			int row = background.getRow((int)logicalTop);
+			int col = background.getCol((int)logicalLeft);
 			Tile tile = null;
 
 			boolean rowDrawn = false;
@@ -396,12 +397,12 @@ public class AstronautPickupFrame extends JFrame {
 					}
 					else {
 						Tile nextTile = background.getTile(col+1, row+1);
-						int pwidth = translateX(nextTile.getMinX()) - translateX(tile.getMinX());
-						int pheight = translateY(nextTile.getMinY()) - translateY(tile.getMinY());
-						g.drawImage(tile.getImage(), translateX(tile.getMinX()), translateY(tile.getMinY()), pwidth, pheight, null);
+						int width = translateToScreenX(nextTile.getMinX()) - translateToScreenX(tile.getMinX());
+						int height = translateToScreenY(nextTile.getMinY()) - translateToScreenY(tile.getMinY());
+						g.drawImage(tile.getImage(), translateToScreenX(tile.getMinX()), translateToScreenY(tile.getMinY()), width, height, null);
 					}					
 					//does the RHE of this tile extend past the RHE of the visible area?
-					if (translateX(tile.getMinX() + tile.getWidth()) > SCREEN_WIDTH || tile.isOutOfBounds()) {
+					if (translateToScreenX(tile.getMinX() + tile.getWidth()) > SCREEN_WIDTH || tile.isOutOfBounds()) {
 						rowDrawn = true;
 					}
 					else {
@@ -409,18 +410,48 @@ public class AstronautPickupFrame extends JFrame {
 					}
 				}
 				//does the bottom edge of this tile extend past the bottom edge of the visible area?
-				if (translateY(tile.getMinY() + tile.getHeight()) > SCREEN_HEIGHT || tile.isOutOfBounds()) {
+				if (translateToScreenY(tile.getMinY() + tile.getHeight()) > SCREEN_HEIGHT || tile.isOutOfBounds()) {
 					screenDrawn = true;
 				}
 				else {
 					//TODO - should be passing in a double, as this represents a universe coordinate
-					col = background.getCol((int)xTopLeft);
+					col = background.getCol((int)logicalLeft);
 					row++;
 					rowDrawn = false;
 				}
 			}
 		}				
 	}
+
+	private int translateToScreenX(double logicalX) {
+		return screenCenterX + scaleLogicalX(logicalX - logicalCenterX);
+	}		
+	private int scaleLogicalX(double logicalX) {
+		return (int) Math.round(scale * logicalX);
+	}
+	private int translateToScreenY(double logicalY) {
+		return screenCenterY + scaleLogicalY(logicalY - logicalCenterY);
+	}		
+	private int scaleLogicalY(double logicalY) {
+		return (int) Math.round(scale * logicalY);
+	}
+
+	private double translateToLogicalX(int screenX) {
+		int offset = screenX - screenCenterX;
+		return offset / scale;
+	}
+	private double translateToLogicalY(int screenY) {
+		int offset = screenY - screenCenterY;
+		return offset / scale;			
+	}
+	
+	protected void contentPane_mouseMoved(MouseEvent e) {
+		MouseInput.screenX = e.getX();
+		MouseInput.screenY = e.getY();
+		MouseInput.logicalX = translateToLogicalX(MouseInput.screenX);
+		MouseInput.logicalY = translateToLogicalY(MouseInput.screenY);
+	}
+
 	protected void this_windowClosing(WindowEvent e) {
 		System.out.println("windowClosing()");
 		stop = true;

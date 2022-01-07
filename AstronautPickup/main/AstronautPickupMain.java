@@ -1,5 +1,5 @@
 
-public class Main {
+public class AstronautPickupMain {
 	
 	public static void main(String[] args)
 	{

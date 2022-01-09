@@ -1,6 +1,7 @@
 import javax.swing.*;
 
 import java.awt.*;
+import java.awt.Dialog.ModalityType;
 import java.util.ArrayList;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -17,6 +18,8 @@ public class AstronautPickupFrame extends JFrame {
 	final public static int SCREEN_HEIGHT = 750;	
 	final public static int SCREEN_WIDTH = 900;
 
+	private TitleFrame titleFrame = null;
+	
 	private int screenCenterX = SCREEN_WIDTH / 2;
 	private int screenCenterY = SCREEN_HEIGHT / 2;
 
@@ -199,6 +202,10 @@ public class AstronautPickupFrame extends JFrame {
 	
 	public void start()
 	{
+		
+		//hide interface
+		this.setVisible(false);
+
 		Thread thread = new Thread()
 		{
 			public void run()
@@ -208,7 +215,23 @@ public class AstronautPickupFrame extends JFrame {
 			}
 		};
 
+		//start the animation loop so that it can initialize at the same time as the title screen being visible
+		//as it runs on a separate thread, it will execute asynchronously
 		thread.start();
+		
+		//create a title frame
+		titleFrame = new TitleFrame();
+		//center on the parent
+		titleFrame.setLocationRelativeTo(this);
+		//display title screen
+		//set the modality to APPLICATION_MODAL
+		titleFrame.setModalityType(ModalityType.APPLICATION_MODAL);
+		//by setting the dialog to visible, the application will start running the dialog
+		titleFrame.setVisible(true);		
+		
+		//when title screen has been closed, execution will resume here.
+		this.setVisible(true);
+		
 		System.out.println("main() complete");
 
 	}	
@@ -216,9 +239,10 @@ public class AstronautPickupFrame extends JFrame {
 
 		universe = animation.getNextUniverse();
 		universeLevel++;
-
+		
 		while (stop == false && universe != null) {
 
+			//initialize animation
 			sprites = universe.getSprites();
 			player1 = (SpaceShipSprite) universe.getPlayer1();
 			background = universe.getBackground();
@@ -226,6 +250,16 @@ public class AstronautPickupFrame extends JFrame {
 			this.scale = universe.getScale();
 			this.logicalCenterX = universe.getXCenter();
 			this.logicalCenterY = universe.getYCenter();
+			
+			//pause while title screen is displayed
+			while (titleFrame != null && titleFrame.isVisible() == true) {
+				Thread.yield();
+				try {
+					Thread.sleep(1);
+				}
+				catch(Exception e) {    					
+				} 				
+			}
 
 			// main game loop
 			while (stop == false && universe.isComplete() == false) {
@@ -265,10 +299,31 @@ public class AstronautPickupFrame extends JFrame {
 				this.logicalCenterY = universe.getYCenter();
 				this.repaint();
 			}
+			
+			if (universe.isComplete()) {
+				int choice = JOptionPane.showOptionDialog(this,
+						"Spaceship go Boom. Play again?",
+								"Game Over",
+								JOptionPane.YES_NO_OPTION,
+								JOptionPane.QUESTION_MESSAGE,
+								null,
+								null,
+								null);
+				
+				if (choice == 0) {
+					((AstronautPickupAnimation) animation).restart();
+					universe = animation.getNextUniverse();
+					keyboard.poll();					
+				}
+				else {
+					universe = null;
+				}
 
-			universe = animation.getNextUniverse();
-			keyboard.poll();
 
+			}
+
+
+			
 		}
 
 		System.out.println("animation complete");

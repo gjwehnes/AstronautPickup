@@ -36,4 +36,10 @@ public class AstronautPickupAnimation implements Animation {
 		return this.current;
 	}
 	
+	public void restart() {
+		universeCount = 0;
+		current = null;
+		score = 0;		
+	}
+	
 }

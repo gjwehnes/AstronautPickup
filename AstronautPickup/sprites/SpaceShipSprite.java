@@ -30,6 +30,7 @@ public class SpaceShipSprite implements DisplayableSprite {
 	private int maxAmmo = 300;
 	private int ammo = maxAmmo;
 	private double health = 100;
+	private int astronautsRescued = 0;
 	
 	public SpaceShipSprite(double centerX, double centerY) {
 
@@ -148,7 +149,11 @@ public class SpaceShipSprite implements DisplayableSprite {
 	public void setHealth(double health) {
 		this.health = health;
 	}
-
+	
+	public int getAstronautsRescued() {
+		return this.astronautsRescued;
+	}
+	
 	public void update(Universe universe, KeyboardInput keyboard, long actual_delta_time) {
 		//LEFT	
 		if (keyboard.keyDown(37) && this.fuel > 0 ) {
@@ -214,6 +219,7 @@ public class SpaceShipSprite implements DisplayableSprite {
 						((AstronautSprite)sprite).setDispose(true);
 						//astronaut pickup
 						AstronautPickupAnimation.addScore(100);
+						astronautsRescued++;						
 					}
 					if (sprite instanceof AsteroidSprite) {
 						((AsteroidSprite)sprite).setDispose(true);

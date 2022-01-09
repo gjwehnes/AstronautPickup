@@ -30,9 +30,7 @@ public class AstronautPickupFrame extends JFrame {
 
 	private JPanel panel = null;	
 	private JButton btnPauseRun;	
-	private JLabel lblScoreLabel;	
-	private JLabel lblScore;	
-	private JLabel lblLevelLabel;	
+	private JLabel lblStatus;
 	private JLabel lblLevel;	
 	private JLabel lblAmmoLabel;	
 	private JLabel lblHealthLabel;	
@@ -110,31 +108,17 @@ public class AstronautPickupFrame extends JFrame {
 		getContentPane().add(btnPauseRun);
 		getContentPane().setComponentZOrder(btnPauseRun, 0);
 
-		lblScoreLabel = new JLabel("Score:");
-		lblScoreLabel.setForeground(Color.YELLOW);
-		lblScoreLabel.setFont(new Font("Tahoma", Font.BOLD, 30));
-		lblScoreLabel.setBounds(80, 22, 96, 30);
-		getContentPane().add(lblScoreLabel);
-		getContentPane().setComponentZOrder(lblScoreLabel, 0);
+		lblStatus = new JLabel("");
+		lblStatus.setForeground(Color.YELLOW);
+		lblStatus.setFont(new Font("Tahoma", Font.BOLD, 30));
+		lblStatus.setBounds(84, 22, 500, 30);
+		getContentPane().add(lblStatus);
+		getContentPane().setComponentZOrder(lblStatus, 0);
 
-		lblScore = new JLabel("000");
-		lblScore.setForeground(Color.YELLOW);
-		lblScore.setFont(new Font("Tahoma", Font.BOLD, 30));
-		lblScore.setBounds(192, 22, 200, 30);
-		getContentPane().add(lblScore);
-		getContentPane().setComponentZOrder(lblScore, 0);
-
-		lblLevelLabel = new JLabel("Level: ");
-		lblLevelLabel.setForeground(Color.YELLOW);
-		lblLevelLabel.setFont(new Font("Tahoma", Font.BOLD, 30));
-		lblLevelLabel.setBounds(690, 20, 128, 30);
-		getContentPane().add(lblLevelLabel);
-		getContentPane().setComponentZOrder(lblLevelLabel, 0);
-
-		lblLevel = new JLabel("1");
+		lblLevel = new JLabel("");
 		lblLevel.setForeground(Color.YELLOW);
 		lblLevel.setFont(new Font("Tahoma", Font.BOLD, 30));
-		lblLevel.setBounds(834, 20, 48, 30);
+		lblLevel.setBounds(690, 20, 192, 30);
 		getContentPane().add(lblLevel);
 		getContentPane().setComponentZOrder(lblLevel, 0);
 		
@@ -227,9 +211,10 @@ public class AstronautPickupFrame extends JFrame {
 		//set the modality to APPLICATION_MODAL
 		titleFrame.setModalityType(ModalityType.APPLICATION_MODAL);
 		//by setting the dialog to visible, the application will start running the dialog
-		titleFrame.setVisible(true);		
+		titleFrame.setVisible(true);
 		
 		//when title screen has been closed, execution will resume here.
+		titleFrame.dispose();
 		this.setVisible(true);
 		
 		System.out.println("main() complete");
@@ -301,23 +286,33 @@ public class AstronautPickupFrame extends JFrame {
 			}
 			
 			if (universe.isComplete()) {
-				int choice = JOptionPane.showOptionDialog(this,
-						"Spaceship go Boom. Play again?",
-								"Game Over",
-								JOptionPane.YES_NO_OPTION,
-								JOptionPane.QUESTION_MESSAGE,
-								null,
-								null,
-								null);
 				
-				if (choice == 0) {
-					((AstronautPickupAnimation) animation).restart();
+				if (((Level01Universe)universe).isSuccessful()) {
+					JOptionPane.showMessageDialog(this,
+							"Proceed to next level!");
+					
 					universe = animation.getNextUniverse();
-					keyboard.poll();					
 				}
 				else {
-					universe = null;
+					int choice = JOptionPane.showOptionDialog(this,
+							"Spaceship go Boom. Play again?",
+									"Game Over",
+									JOptionPane.YES_NO_OPTION,
+									JOptionPane.QUESTION_MESSAGE,
+									null,
+									null,
+									null);
+					
+					if (choice == 0) {
+						((AstronautPickupAnimation) animation).restart();
+						universe = animation.getNextUniverse();
+						keyboard.poll();					
+					}
+					else {
+						universe = null;
+					}
 				}
+				
 
 
 			}
@@ -334,7 +329,8 @@ public class AstronautPickupFrame extends JFrame {
 
 	private void updateControls() {
 		
-		this.lblScore.setText(Integer.toString(AstronautPickupAnimation.getScore()));	
+		this.lblStatus.setText(String.format("Score: %8d  Rescued: %2d/%2d",AstronautPickupAnimation.getScore(), player1.getAstronautsRescued(), ((Level01Universe) universe).getTarget()));	
+		this.lblLevel.setText(String.format("Level: %3d",((AstronautPickupAnimation)animation).getLevel()));
 		this.lblFuel.setText(String.format("%3.1f", player1.getFuel()));	
 		setBarLabelBounds(this.lblFuel, player1.getFuel());	
 		this.lblAmmo.setText(Integer.toString(player1.getAmmo()));	

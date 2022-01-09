@@ -3,14 +3,18 @@ import java.util.ArrayList;
 
 public class Level01Universe implements Universe {
 
-	private final int ASTRONAUTS = 25;
-	private final int ASTEROIDS = 50;
-	private final int INITIAL_UFOS = 1;
-	private final int UFO_FREQUENCY = 500;
+	private int astronauts = 0;
+	private int target = 0;
+	private int asteroids = 0;
+	private int ufo_frequency = 0;
+	
+	private final double ASTRONAUT_RANGE = 2500;
+	private final double ASTRONAUT_HALF_RANGE = ASTRONAUT_RANGE / 2;
 	private final double UFO_RANGE = 5000;
 	private final double UFO_HALF_RANGE = UFO_RANGE / 2;
 	
-	private boolean complete = false;	
+	private boolean complete = false;
+	private boolean successful = false;
 	private Background background = null;	
 	private SpaceShipSprite player1 = null;
 	private ArrayList<DisplayableSprite> sprites = new ArrayList<DisplayableSprite>();
@@ -20,20 +24,25 @@ public class Level01Universe implements Universe {
 	protected long elapsedTime = 0;
 	protected long updates = 0;
 	
-	
-	public Level01Universe () {
+
+	public Level01Universe(int astronauts, int target, int asteroids, int ufo_frequency) {
+		super();
 		
-		super();		
+		this.astronauts = astronauts;
+		this.target = target;
+		this.asteroids = asteroids;
+		this.ufo_frequency = ufo_frequency;
+
 		this.setXCenter(0);
 		this.setYCenter(0);
 		
 		background = new StarfieldBackground();
 		
 		//add random Astronauts
-		for (int i = 0; i < ASTRONAUTS; i++) {
+		for (int i = 0; i < astronauts; i++) {
 			//only add Astronauts within a certain distance of the player starting point
-			double x = Math.random() * UFO_RANGE - UFO_HALF_RANGE;
-			double y = Math.random() * UFO_RANGE - UFO_HALF_RANGE;
+			double x = Math.random() * ASTRONAUT_RANGE - ASTRONAUT_HALF_RANGE;
+			double y = Math.random() * ASTRONAUT_RANGE - ASTRONAUT_HALF_RANGE;
 			//random velocity and rotation
 			double velocityX = Math.random() * 100 - 50;
 			double velocityY = Math.random() * 100 - 50;
@@ -44,7 +53,7 @@ public class Level01Universe implements Universe {
 		}
 		
 		//add random Asteroids
-		for (int i = 0; i < ASTEROIDS; i++) {
+		for (int i = 0; i < asteroids; i++) {
 			double x = Math.random() * UFO_RANGE - UFO_HALF_RANGE;
 			double y = Math.random() * UFO_RANGE - UFO_HALF_RANGE;
 			double velocityX = Math.random() * 200 - 50;
@@ -57,10 +66,6 @@ public class Level01Universe implements Universe {
 						
 		player1 = new SpaceShipSprite(0,0);
 		sprites.add(player1);
-
-		for (int i = 0; i < INITIAL_UFOS; i++) {
-			spawnUFOSprite();
-		}
 
 	}
 	
@@ -81,6 +86,10 @@ public class Level01Universe implements Universe {
 	public boolean centerOnPlayer() {
 		return true;
 	}		
+	
+	public int getTarget() {
+		return this.target;
+	}
 
 	public void update(KeyboardInput keyboard, long actual_delta_time) {
 
@@ -93,7 +102,7 @@ public class Level01Universe implements Universe {
 		}
 		
 		//spawn new UFO after a given # of updates
-		if (updates % UFO_FREQUENCY == 0) {
+		if (updates % ufo_frequency == 0) {
 			spawnUFOSprite();
 		}
 		
@@ -103,6 +112,12 @@ public class Level01Universe implements Universe {
 	}
 
 	 protected void updateSprites(KeyboardInput keyboard, long actual_delta_time) {
+
+		 	if (player1.getAstronautsRescued() >= target) {
+				//end of game
+		 		successful = true;
+				complete = true;
+		 	}
 
 			if (player1.getHealth() < 0) {
 				//end of game
@@ -194,6 +209,10 @@ public class Level01Universe implements Universe {
 	
 	public boolean isComplete() {
 		return complete;
+	}
+	
+	public boolean isSuccessful() {
+		return successful;
 	}
 
 	public void setComplete(boolean complete) {

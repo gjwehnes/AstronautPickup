@@ -56,6 +56,7 @@ public class AstronautPickupFrame extends JFrame {
 	private Animation animation = null;
 	private SpaceShipSprite player1 = null;
 	private ArrayList<DisplayableSprite> sprites = null;
+	private ArrayList<Background> backgrounds = null;
 	private Background background = null;
 	boolean centreOnPlayer = false;
 	int universeLevel = 0;
@@ -230,7 +231,7 @@ public class AstronautPickupFrame extends JFrame {
 			//initialize animation
 			sprites = universe.getSprites();
 			player1 = (SpaceShipSprite) universe.getPlayer1();
-			background = universe.getBackground();
+			backgrounds = universe.getBackgrounds();
 			centreOnPlayer = universe.centerOnPlayer();
 			this.scale = universe.getScale();
 			this.logicalCenterX = universe.getXCenter();
@@ -402,7 +403,11 @@ public class AstronautPickupFrame extends JFrame {
 				logicalCenterY = player1.getCenterY();     
 			}
 
-			paintBackground(g, background);
+			if (backgrounds != null) {
+				for (Background background: backgrounds) {
+					paintBackground(g, background);
+				}
+			}
 
 			for (DisplayableSprite activeSprite : sprites) {
 				DisplayableSprite sprite = activeSprite;
@@ -421,19 +426,20 @@ public class AstronautPickupFrame extends JFrame {
 		}
 		
 		private void paintBackground(Graphics g, Background background) {
-
+			
 			if ((g == null) || (background == null)) {
 				return;
 			}
 			
 			//what tile covers the top-left corner?
-			double logicalLeft = ( logicalCenterX - (screenCenterX / scale));
-			double logicalTop =  (logicalCenterY - (screenCenterY / scale)) ;
+			double logicalLeft = (logicalCenterX  - (screenCenterX / scale) - background.getShiftX());
+			double logicalTop =  (logicalCenterY - (screenCenterY / scale) - background.getShiftY()) ;
 			
-			int row = background.getRow((int)logicalTop);
-			int col = background.getCol((int)logicalLeft);
-			Tile tile = null;
-
+			
+			int row = background.getRow((int)(logicalTop - background.getShiftY() ));
+			int col = background.getCol((int)(logicalLeft - background.getShiftX()  ));
+			Tile tile = background.getTile(col, row);
+			
 			boolean rowDrawn = false;
 			boolean screenDrawn = false;
 			while (screenDrawn == false) {
@@ -450,10 +456,10 @@ public class AstronautPickupFrame extends JFrame {
 						Tile nextTile = background.getTile(col+1, row+1);
 						int width = translateToScreenX(nextTile.getMinX()) - translateToScreenX(tile.getMinX());
 						int height = translateToScreenY(nextTile.getMinY()) - translateToScreenY(tile.getMinY());
-						g.drawImage(tile.getImage(), translateToScreenX(tile.getMinX()), translateToScreenY(tile.getMinY()), width, height, null);
+						g.drawImage(tile.getImage(), translateToScreenX(tile.getMinX() + background.getShiftX()), translateToScreenY(tile.getMinY() + background.getShiftY()), width, height, null);
 					}					
 					//does the RHE of this tile extend past the RHE of the visible area?
-					if (translateToScreenX(tile.getMinX() + tile.getWidth()) > SCREEN_WIDTH || tile.isOutOfBounds()) {
+					if (translateToScreenX(tile.getMinX() + background.getShiftX() + tile.getWidth()) > SCREEN_WIDTH || tile.isOutOfBounds()) {
 						rowDrawn = true;
 					}
 					else {
@@ -461,7 +467,7 @@ public class AstronautPickupFrame extends JFrame {
 					}
 				}
 				//does the bottom edge of this tile extend past the bottom edge of the visible area?
-				if (translateToScreenY(tile.getMinY() + tile.getHeight()) > SCREEN_HEIGHT || tile.isOutOfBounds()) {
+				if (translateToScreenY(tile.getMinY() + background.getShiftY() + tile.getHeight()) > SCREEN_HEIGHT || tile.isOutOfBounds()) {
 					screenDrawn = true;
 				}
 				else {

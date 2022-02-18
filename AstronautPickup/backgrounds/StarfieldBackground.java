@@ -34,11 +34,11 @@ public class StarfieldBackground implements Background {
 		return newTile;
 	}
 	
-	public int getCol(int x) {
+	public int getCol(double x) {
 		//which col is x sitting at?
 		int col = 0;
 		if (backgroundWidth != 0) {
-			col = (x / backgroundWidth);
+			col = (int) (x / backgroundWidth);
 			if (x < 0) {
 				return col - 1;
 			}
@@ -51,12 +51,12 @@ public class StarfieldBackground implements Background {
 		}
 	}
 	
-	public int getRow(int y) {
+	public int getRow(double y) {
 		//which row is y sitting at?
 		int row = 0;
 		
 		if (backgroundHeight != 0) {
-			row = (y / backgroundHeight);
+			row = (int) (y / backgroundHeight);
 			if (y < 0) {
 				return row - 1;
 			}
@@ -67,6 +67,26 @@ public class StarfieldBackground implements Background {
 		else {
 			return 0;
 		}
+	}
+
+	@Override
+	public double getShiftX() {
+		return 0;
+	}
+
+	@Override
+	public double getShiftY() {
+		return 0;
+	}
+
+	@Override
+	public void setShiftX(int shiftX) {
+		//ignore
+	}
+
+	@Override
+	public void setShiftY(int shiftY) {
+		//ignore
 	}
 	
 }

@@ -16,6 +16,7 @@ public class Level01Universe implements Universe {
 	private boolean complete = false;
 	private boolean successful = false;
 	private Background background = null;	
+	private ArrayList<Background> backgrounds = null;
 	private SpaceShipSprite player1 = null;
 	private ArrayList<DisplayableSprite> sprites = new ArrayList<DisplayableSprite>();
 	private ArrayList<DisplayableSprite> disposalList = new ArrayList<DisplayableSprite>();
@@ -37,6 +38,8 @@ public class Level01Universe implements Universe {
 		this.setYCenter(0);
 		
 		background = new StarfieldBackground();
+		backgrounds =new ArrayList<Background>();
+		backgrounds.add(background);
 		
 		//add random Astronauts
 		for (int i = 0; i < astronauts; i++) {
@@ -220,9 +223,9 @@ public class Level01Universe implements Universe {
 	}
 
 	@Override
-	public Background getBackground() {
-		return this.background;
-	}
+	public ArrayList<Background> getBackgrounds() {
+		return backgrounds;
+	}	
 
 	@Override
 	public DisplayableSprite getPlayer1() {

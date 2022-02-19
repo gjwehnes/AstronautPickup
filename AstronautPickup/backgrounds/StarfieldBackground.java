@@ -80,12 +80,12 @@ public class StarfieldBackground implements Background {
 	}
 
 	@Override
-	public void setShiftX(int shiftX) {
+	public void setShiftX(double shiftX) {
 		//ignore
 	}
 
 	@Override
-	public void setShiftY(int shiftY) {
+	public void setShiftY(double shiftY) {
 		//ignore
 	}
 	

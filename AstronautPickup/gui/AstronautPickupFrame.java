@@ -234,8 +234,6 @@ public class AstronautPickupFrame extends JFrame {
 			backgrounds = universe.getBackgrounds();
 			centreOnPlayer = universe.centerOnPlayer();
 			this.scale = universe.getScale();
-			this.logicalCenterX = universe.getXCenter();
-			this.logicalCenterY = universe.getYCenter();
 			
 			//pause while title screen is displayed
 			while (titleFrame != null && titleFrame.isVisible() == true) {
@@ -275,14 +273,21 @@ public class AstronautPickupFrame extends JFrame {
 				handleKeyboardInput();
 
 				//UPDATE STATE
-				updateTime();
-				
+				updateTime();				
 				universe.update(keyboard, actual_delta_time);
-				updateControls();
+				
+				//align animation frame with logical universe
+				if (player1 != null && centreOnPlayer) {
+					this.logicalCenterX = player1.getCenterX();
+					this.logicalCenterY = player1.getCenterY();     
+				}
+				else {
+					this.logicalCenterX = universe.getXCenter();
+					this.logicalCenterY = universe.getYCenter();
+				}
 
 				//REFRESH
-				this.logicalCenterX = universe.getXCenter();
-				this.logicalCenterY = universe.getYCenter();
+				updateControls();
 				this.repaint();
 			}
 			
@@ -396,11 +401,6 @@ public class AstronautPickupFrame extends JFrame {
 		{	
 			if (universe == null) {
 				return;
-			}
-
-			if (player1 != null && centreOnPlayer) {
-				logicalCenterX = player1.getCenterX();
-				logicalCenterY = player1.getCenterY();     
 			}
 
 			if (backgrounds != null) {

@@ -15,21 +15,25 @@ import java.awt.event.MouseMotionAdapter;
 public class AstronautPickupFrame extends JFrame {
 
 	final public static int FRAMES_PER_SECOND = 60;	
-	final public static int SCREEN_HEIGHT = 750;	
+	final long REFRESH_TIME = 1000 / FRAMES_PER_SECOND;	//MILLISECONDS	
+	final boolean DISPLAY_TIMING = true;
+	
+	final public static int SCREEN_HEIGHT = 750;
 	final public static int SCREEN_WIDTH = 900;
 
 	private TitleFrame titleFrame = null;
 	
 	private int screenCenterX = SCREEN_WIDTH / 2;
 	private int screenCenterY = SCREEN_HEIGHT / 2;
-
+	final private static boolean SHOW_GRID = true;
+	
 	private double scale = 1;
 	//point in universe on which the screen will center
 	private double logicalCenterX = 0;		
 	private double logicalCenterY = 0;
 
-	private JPanel panel = null;	
-	private JButton btnPauseRun;	
+	protected JPanel panel = null;	
+	protected JButton btnPauseRun;	
 	private JLabel lblStatus;
 	private JLabel lblLevel;	
 	private JLabel lblAmmoLabel;	
@@ -41,16 +45,13 @@ public class AstronautPickupFrame extends JFrame {
 
 	private static boolean stop = false;
 
-	private long current_time = 0;								//MILLISECONDS
-	private long next_refresh_time = 0;							//MILLISECONDS
-	private long last_refresh_time = 0;
-	private long minimum_delta_time = 1000 / FRAMES_PER_SECOND;	//MILLISECONDS
-	private long actual_delta_time = 0;							//MILLISECONDS
-	private long elapsed_time = 0;
+	protected long total_elapsed_time = 0;
+	protected long lastRefreshTime = 0;
+	protected long deltaTime = 0;
 	private boolean isPaused = false;
 
-	private KeyboardInput keyboard = new KeyboardInput();
-	private Universe universe = null;
+	protected KeyboardInput keyboard = new KeyboardInput();
+	protected Universe universe = null;
 
 	//local (and direct references to various objects in universe ... should reduce lag by avoiding dynamic lookup
 	private Animation animation = null;
@@ -64,9 +65,25 @@ public class AstronautPickupFrame extends JFrame {
 	public AstronautPickupFrame(Animation animation)
 	{
 		super("");
+		getContentPane().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				thisContentPane_mousePressed(e);
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				thisContentPane_mouseReleased(e);
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				contentPane_mouseExited(e);
+			}
+		});
+		
+		this.animation = animation;
+//		this.setVisible(true);		
 		this.setFocusable(true);
 		this.setSize(SCREEN_WIDTH + 20, SCREEN_HEIGHT + 36);
-		this.animation = animation;
 
 		this.addWindowListener(new WindowAdapter() {
 			@Override
@@ -83,6 +100,16 @@ public class AstronautPickupFrame extends JFrame {
 			@Override
 			public void keyReleased(KeyEvent arg0) {
 				keyboard.keyReleased(arg0);
+			}
+		});
+		getContentPane().addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				contentPane_mouseMoved(e);
+			}
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				contentPane_mouseMoved(e);
 			}
 		});
 
@@ -104,7 +131,7 @@ public class AstronautPickupFrame extends JFrame {
 		});
 
 		btnPauseRun.setFont(new Font("Tahoma", Font.BOLD, 12));
-		btnPauseRun.setBounds(20, 20, 48, 32);
+		btnPauseRun.setBounds(SCREEN_WIDTH - 64, 20, 48, 32);
 		btnPauseRun.setFocusable(false);
 		getContentPane().add(btnPauseRun);
 		getContentPane().setComponentZOrder(btnPauseRun, 0);
@@ -187,10 +214,6 @@ public class AstronautPickupFrame extends JFrame {
 	
 	public void start()
 	{
-		
-		//hide interface
-		this.setVisible(false);
-
 		Thread thread = new Thread()
 		{
 			public void run()
@@ -200,11 +223,18 @@ public class AstronautPickupFrame extends JFrame {
 			}
 		};
 
-		//start the animation loop so that it can initialize at the same time as the title screen being visible
-		//as it runs on a separate thread, it will execute asynchronously
 		thread.start();
-		
-		//create a title frame
+		//start the animation loop so that it can initialize at the same time as a title screen being visible
+		//as it runs on a separate thread, it will execute asynchronously
+		displayTitleScreen();
+				
+		System.out.println("main() complete");
+
+	}
+	
+	protected void displayTitleScreen() {
+		//hide interface
+		this.setVisible(false);
 		titleFrame = new TitleFrame();
 		//center on the parent
 		titleFrame.setLocationRelativeTo(this);
@@ -218,11 +248,11 @@ public class AstronautPickupFrame extends JFrame {
 		titleFrame.dispose();
 		this.setVisible(true);
 		
-		System.out.println("main() complete");
-
-	}	
+	}
 	private void animationLoop() {
 
+		lastRefreshTime = System.currentTimeMillis();
+		
 		universe = animation.getNextUniverse();
 		universeLevel++;
 		
@@ -248,12 +278,12 @@ public class AstronautPickupFrame extends JFrame {
 			// main game loop
 			while (stop == false && universe.isComplete() == false) {
 
-				//adapted from http://www.java-gaming.org/index.php?topic=24220.0
-				last_refresh_time = System.currentTimeMillis();
-				next_refresh_time = current_time + minimum_delta_time;
+				if (DISPLAY_TIMING == true) System.out.println(String.format("animation loop: %10s @ %6d", "sleep", System.currentTimeMillis() % 1000000));
 
+				//adapted from http://www.java-gaming.org/index.php?topic=24220.0
+				long target_wake_time = System.currentTimeMillis() + REFRESH_TIME;
 				//sleep until the next refresh time
-				while (current_time < next_refresh_time)
+				while (System.currentTimeMillis() < target_wake_time)
 				{
 					//allow other threads (i.e. the Swing thread) to do its work
 					Thread.yield();
@@ -264,18 +294,25 @@ public class AstronautPickupFrame extends JFrame {
 					catch(Exception e) {    					
 					} 
 
-					//track current time
-					current_time = System.currentTimeMillis();
 				}
 
+				if (DISPLAY_TIMING == true) System.out.println(String.format("animation loop: %10s @ %6d  (+%4d ms)", "wake", System.currentTimeMillis() % 1000000, System.currentTimeMillis() - lastRefreshTime));
+
+				//track time that has elapsed since the last update, and note the refresh time
+				deltaTime = (isPaused ? 0 : System.currentTimeMillis() - lastRefreshTime);
+				lastRefreshTime = System.currentTimeMillis();
+				total_elapsed_time += deltaTime;
+				
 				//read input
 				keyboard.poll();
 				handleKeyboardInput();
 
-				//UPDATE STATE
-				updateTime();				
-				universe.update(keyboard, actual_delta_time);
+				//update logical
+				universe.update(keyboard, deltaTime);
+				if (DISPLAY_TIMING == true) System.out.println(String.format("animation loop: %10s @ %6d  (+%4d ms)", "logic", System.currentTimeMillis() % 1000000, System.currentTimeMillis() - lastRefreshTime));
 				
+				//update interface
+				updateControls();
 				//align animation frame with logical universe
 				if (player1 != null && centreOnPlayer) {
 					this.logicalCenterX = player1.getCenterX();
@@ -286,45 +323,13 @@ public class AstronautPickupFrame extends JFrame {
 					this.logicalCenterY = universe.getYCenter();
 				}
 
-				//REFRESH
-				updateControls();
 				this.repaint();
-			}
-			
-			if (universe.isComplete()) {
-				
-				if (((Level01Universe)universe).isSuccessful()) {
-					JOptionPane.showMessageDialog(this,
-							"Proceed to next level!");
-					
-					universe = animation.getNextUniverse();
-				}
-				else {
-					int choice = JOptionPane.showOptionDialog(this,
-							"Spaceship go Boom. Play again?",
-									"Game Over",
-									JOptionPane.YES_NO_OPTION,
-									JOptionPane.QUESTION_MESSAGE,
-									null,
-									null,
-									null);
-					
-					if (choice == 0) {
-						((AstronautPickupAnimation) animation).restart();
-						universe = animation.getNextUniverse();
-						keyboard.poll();					
-					}
-					else {
-						universe = null;
-					}
-				}
-				
-
 
 			}
 
+			handleUniverseComplete();
+			keyboard.poll();
 
-			
 		}
 
 		System.out.println("animation complete");
@@ -332,8 +337,41 @@ public class AstronautPickupFrame extends JFrame {
 		dispose();	
 
 	}
+	
+	private void handleUniverseComplete() {
+	
+		if (universe.isComplete()) {
+			
+			if (((Level01Universe)universe).isSuccessful()) {
+				JOptionPane.showMessageDialog(this,
+						"Proceed to next level!");
+				
+				universe = animation.getNextUniverse();
+			}
+			else {
+				int choice = JOptionPane.showOptionDialog(this,
+						"Spaceship go Boom. Play again?",
+								"Game Over",
+								JOptionPane.YES_NO_OPTION,
+								JOptionPane.QUESTION_MESSAGE,
+								null,
+								null,
+								null);
+				
+				if (choice == 0) {
+					((AstronautPickupAnimation) animation).restart();
+					universe = animation.getNextUniverse();
+					keyboard.poll();					
+				}
+				else {
+					universe = null;
+				}
+			}				
+		}			
+	}
 
-	private void updateControls() {
+
+	protected void updateControls() {
 		
 		this.lblStatus.setText(String.format("Score: %8d  Rescued: %2d/%2d",AstronautPickupAnimation.getScore(), player1.getAstronautsRescued(), ((Level01Universe) universe).getTarget()));	
 		this.lblLevel.setText(String.format("Level: %3d",((AstronautPickupAnimation)animation).getLevel()));
@@ -343,15 +381,6 @@ public class AstronautPickupFrame extends JFrame {
 		setBarLabelBounds(this.lblAmmo, player1.getAmmo() / (float)player1.getMaxAmmo() * 100);	
 		this.lblHealth.setText(String.format("%3.2f", player1.getHealth()));	
 		setBarLabelBounds(this.lblHealth, player1.getHealth());
-	}
-
-	private void updateTime() {
-
-		current_time = System.currentTimeMillis();
-		actual_delta_time = (isPaused ? 0 : current_time - last_refresh_time);
-		last_refresh_time = current_time;
-		elapsed_time += actual_delta_time;
-
 	}
 
 	protected void btnPauseRun_mouseClicked(MouseEvent arg0) {
@@ -375,24 +404,25 @@ public class AstronautPickupFrame extends JFrame {
 		}
 		if (keyboard.keyDown(112)) {
 			scale *= 1.01;
+			contentPane_mouseMoved(null);
 		}
 		if (keyboard.keyDown(113)) {
 			scale /= 1.01;
+			contentPane_mouseMoved(null);
 		}
 		
 		if (keyboard.keyDown(65)) {
-			screenCenterX -= 1;
-		}
-		if (keyboard.keyDown(68)) {
 			screenCenterX += 1;
 		}
-		if (keyboard.keyDown(83)) {
-			screenCenterY -= 1;
+		if (keyboard.keyDown(68)) {
+			screenCenterX -= 1;
 		}
-		if (keyboard.keyDown(88)) {
+		if (keyboard.keyDown(83)) {
 			screenCenterY += 1;
 		}
-		
+		if (keyboard.keyDown(88)) {
+			screenCenterY -= 1;
+		}		
 	}
 
 	class DrawPanel extends JPanel {
@@ -409,19 +439,22 @@ public class AstronautPickupFrame extends JFrame {
 				}
 			}
 
-			for (DisplayableSprite activeSprite : sprites) {
-				DisplayableSprite sprite = activeSprite;
-				if (sprite.getVisible()) {
-					if (sprite.getImage() != null) {
-						g.drawImage(sprite.getImage(), translateToScreenX(sprite.getMinX()), translateToScreenY(sprite.getMinY()), scaleLogicalX(sprite.getWidth()), scaleLogicalY(sprite.getHeight()), null);
+			if (sprites != null) {
+				for (DisplayableSprite activeSprite : sprites) {
+					DisplayableSprite sprite = activeSprite;
+					if (sprite.getVisible()) {
+						if (sprite.getImage() != null) {
+							g.drawImage(sprite.getImage(), translateToScreenX(sprite.getMinX()), translateToScreenY(sprite.getMinY()), scaleLogicalX(sprite.getWidth()), scaleLogicalY(sprite.getHeight()), null);
+						}
+						else {
+							g.setColor(Color.BLUE);
+							g.fillRect(translateToScreenX(sprite.getMinX()), translateToScreenY(sprite.getMinY()), scaleLogicalX(sprite.getWidth()), scaleLogicalY(sprite.getHeight()));
+						}
 					}
-					else {
-						g.setColor(Color.BLUE);
-						g.fillRect(translateToScreenX(sprite.getMinX()), translateToScreenY(sprite.getMinY()), scaleLogicalX(sprite.getWidth()), scaleLogicalY(sprite.getHeight()));
-					}
-				}
-
+				}				
 			}
+
+			if (DISPLAY_TIMING == true) System.out.println(String.format("animation loop: %10s @ %6d  (+%4d ms)", "interface", System.currentTimeMillis() % 1000000, System.currentTimeMillis() - lastRefreshTime));
 
 		}
 		
@@ -434,8 +467,7 @@ public class AstronautPickupFrame extends JFrame {
 			//what tile covers the top-left corner?
 			double logicalLeft = (logicalCenterX  - (screenCenterX / scale) - background.getShiftX());
 			double logicalTop =  (logicalCenterY - (screenCenterY / scale) - background.getShiftY()) ;
-			
-			
+						
 			int row = background.getRow((int)(logicalTop - background.getShiftY() ));
 			int col = background.getCol((int)(logicalLeft - background.getShiftX()  ));
 			Tile tile = background.getTile(col, row);
@@ -471,8 +503,7 @@ public class AstronautPickupFrame extends JFrame {
 					screenDrawn = true;
 				}
 				else {
-					//TODO - should be passing in a double, as this represents a universe coordinate
-					col = background.getCol((int)logicalLeft);
+					col = background.getCol(logicalLeft);
 					row++;
 					rowDrawn = false;
 				}
@@ -503,15 +534,46 @@ public class AstronautPickupFrame extends JFrame {
 	}
 	
 	protected void contentPane_mouseMoved(MouseEvent e) {
-		MouseInput.screenX = e.getX();
-		MouseInput.screenY = e.getY();
-		MouseInput.logicalX = translateToLogicalX(MouseInput.screenX);
-		MouseInput.logicalY = translateToLogicalY(MouseInput.screenY);
+		Point point = this.getContentPane().getMousePosition();
+		if (point != null) {
+			MouseInput.screenX = point.x;		
+			MouseInput.screenY = point.y;
+			MouseInput.logicalX = translateToLogicalX(MouseInput.screenX);
+			MouseInput.logicalY = translateToLogicalY(MouseInput.screenY);
+		}
+		else {
+			MouseInput.screenX = -1;		
+			MouseInput.screenY = -1;
+			MouseInput.logicalX = Double.NaN;
+			MouseInput.logicalY = Double.NaN;
+		}
+	}
+	
+	protected void thisContentPane_mousePressed(MouseEvent e) {
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			MouseInput.leftButtonDown = true;
+		} else if (e.getButton() == MouseEvent.BUTTON3) {
+			MouseInput.rightButtonDown = true;
+		} else {
+			//DO NOTHING
+		}
+	}
+	protected void thisContentPane_mouseReleased(MouseEvent e) {
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			MouseInput.leftButtonDown = false;
+		} else if (e.getButton() == MouseEvent.BUTTON3) {
+			MouseInput.rightButtonDown = false;
+		} else {
+			//DO NOTHING
+		}
 	}
 
 	protected void this_windowClosing(WindowEvent e) {
 		System.out.println("windowClosing()");
 		stop = true;
 		dispose();	
+	}
+	protected void contentPane_mouseExited(MouseEvent e) {
+		contentPane_mouseMoved(e);
 	}
 }

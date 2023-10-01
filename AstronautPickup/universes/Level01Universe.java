@@ -20,8 +20,6 @@ public class Level01Universe implements Universe {
 	private SpaceShipSprite player1 = null;
 	private ArrayList<DisplayableSprite> sprites = new ArrayList<DisplayableSprite>();
 	private ArrayList<DisplayableSprite> disposalList = new ArrayList<DisplayableSprite>();
-	private double xCenter = 0;
-	private double yCenter = 0;
 	protected long elapsedTime = 0;
 	protected long updates = 0;
 	
@@ -194,20 +192,18 @@ public class Level01Universe implements Universe {
 	}
 
 	public double getXCenter() {
-		return xCenter;
+		return player1.getCenterX();
 	}
 
 
 	public double getYCenter() {
-		return yCenter;
+		return player1.getCenterY();
 	}
 	
 	public void setXCenter(double xCenter) {
-		this.xCenter = xCenter;
 	}
 
 	public void setYCenter(double yCenter) {
-		this.yCenter = yCenter;
 	}
 	
 	public boolean isComplete() {

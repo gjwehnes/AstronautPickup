@@ -59,7 +59,6 @@ public class AstronautPickupFrame extends JFrame {
 	private ArrayList<DisplayableSprite> sprites = null;
 	private ArrayList<Background> backgrounds = null;
 	private Background background = null;
-	boolean centreOnPlayer = false;
 	int universeLevel = 0;
 	
 	public AstronautPickupFrame(Animation animation)
@@ -262,7 +261,6 @@ public class AstronautPickupFrame extends JFrame {
 			sprites = universe.getSprites();
 			player1 = (SpaceShipSprite) universe.getPlayer1();
 			backgrounds = universe.getBackgrounds();
-			centreOnPlayer = universe.centerOnPlayer();
 			this.scale = universe.getScale();
 			
 			//pause while title screen is displayed
@@ -314,14 +312,8 @@ public class AstronautPickupFrame extends JFrame {
 				//update interface
 				updateControls();
 				//align animation frame with logical universe
-				if (player1 != null && centreOnPlayer) {
-					this.logicalCenterX = player1.getCenterX();
-					this.logicalCenterY = player1.getCenterY();     
-				}
-				else {
-					this.logicalCenterX = universe.getXCenter();
-					this.logicalCenterY = universe.getYCenter();
-				}
+				this.logicalCenterX = universe.getXCenter();
+				this.logicalCenterY = universe.getYCenter();
 
 				this.repaint();
 

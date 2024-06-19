@@ -252,7 +252,7 @@ public class AstronautPickupFrame extends JFrame {
 
 		lastRefreshTime = System.currentTimeMillis();
 		
-		universe = animation.getNextUniverse();
+		universe = animation.switchUniverse(null);
 		universeLevel++;
 		
 		while (stop == false && universe != null) {
@@ -338,7 +338,7 @@ public class AstronautPickupFrame extends JFrame {
 				JOptionPane.showMessageDialog(this,
 						"Proceed to next level!");
 				
-				universe = animation.getNextUniverse();
+				universe = animation.switchUniverse(null);
 			}
 			else {
 				int choice = JOptionPane.showOptionDialog(this,
@@ -352,7 +352,7 @@ public class AstronautPickupFrame extends JFrame {
 				
 				if (choice == 0) {
 					((AstronautPickupAnimation) animation).restart();
-					universe = animation.getNextUniverse();
+					universe = animation.switchUniverse(null);
 					keyboard.poll();					
 				}
 				else {

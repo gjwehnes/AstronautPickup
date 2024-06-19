@@ -21,7 +21,8 @@ public class AstronautPickupAnimation implements Animation {
 		return universeCount;
 	}
 	
-	public Universe getNextUniverse() {
+	
+	public Universe switchUniverse(Object event) {
 
 		universeCount++;
 		

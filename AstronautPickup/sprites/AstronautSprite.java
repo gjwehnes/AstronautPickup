@@ -121,11 +121,15 @@ public class AstronautSprite implements DisplayableSprite, MovableSprite {
 	    	currentAngle += 360;
 	    }
 	    
-	    int frame = (int)currentAngle;
-	    if (rotatedImages[frame] != null) {
-		    this.height = ((int) (rotatedImages[frame].getHeight(null) * scale));
-		    this.width = ((int) (rotatedImages[frame].getWidth(null) * scale));
-	    }
+	    //TEMP!!
+	    try {
+			int frame = (int)currentAngle;
+			if (rotatedImages[frame] != null) {
+			    this.height = ((int) (rotatedImages[frame].getHeight(null) * scale));
+			    this.width = ((int) (rotatedImages[frame].getWidth(null) * scale));
+			}
+		} catch (Exception e) {
+		}
 	}
 
 	public void setCenterX(double centerX) {

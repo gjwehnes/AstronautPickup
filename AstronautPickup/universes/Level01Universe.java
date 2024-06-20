@@ -213,6 +213,10 @@ public class Level01Universe implements Universe {
 	public boolean isSuccessful() {
 		return successful;
 	}
+	
+	public void setSuccessful(boolean success) {
+		this.successful = success;
+	}
 
 	public void setComplete(boolean complete) {
 		this.complete = complete;

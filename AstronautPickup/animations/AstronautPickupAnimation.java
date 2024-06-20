@@ -80,9 +80,9 @@ public class AstronautPickupAnimation implements Animation {
 	}
 
 	@Override
-	public void update(KeyboardInput keyboard, long actual_delta_time) {
+	public void update(AnimationFrame frame, long actual_delta_time) {
 		
-		if (keyboard.keyDownOnce(KeyboardInput.KEY_F4)) {
+		if (KeyboardInput.getKeyboard().keyDownOnce(KeyboardInput.KEY_F4)) {
 			//cheat code... end the level
 			((Level01Universe)(this.current)).setComplete(true);
 			((Level01Universe)(this.current)).setSuccessful(true);

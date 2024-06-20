@@ -108,7 +108,7 @@ public class AstronautSprite implements DisplayableSprite, MovableSprite {
 		this.dispose = dispose;
 	}	
 	
-	public void update(Universe universe, KeyboardInput keyboard, long actual_delta_time) {
+	public void update(Universe universe, long actual_delta_time) {
 
 		this.centerX += (actual_delta_time * 0.001 * velocityX);
 		this.centerY += (actual_delta_time * 0.001 * velocityY);

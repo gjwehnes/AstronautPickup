@@ -154,9 +154,12 @@ public class SpaceShipSprite implements DisplayableSprite {
 		return this.astronautsRescued;
 	}
 	
-	public void update(Universe universe, KeyboardInput keyboard, long actual_delta_time) {
+	public void update(Universe universe, long actual_delta_time) {
+		
+		KeyboardInput keyboard = KeyboardInput.getKeyboard();
+		
 		//LEFT	
-		if (keyboard.keyDown(37) && this.fuel > 0 ) {
+		if (KeyboardInput.getKeyboard().keyDown(37) && this.fuel > 0 ) {
 			currentAngle -= (ROTATION_SPEED * (actual_delta_time * 0.001));
 			this.fuel -= 1 * actual_delta_time * 0.001;
 		}
@@ -205,6 +208,11 @@ public class SpaceShipSprite implements DisplayableSprite {
 	    checkAstronautPickup(universe);	    
 			
 		reloadTime -= actual_delta_time;
+		
+		if (universe.isComplete()) {
+			thrustSound.setStop(true);
+			bulletSound.setStop(true);
+		}
 	}
 	
 	private void checkAstronautPickup(Universe universe) {

@@ -92,27 +92,22 @@ public class Level01Universe implements Universe {
 		return this.target;
 	}
 
-	public void update(KeyboardInput keyboard, long actual_delta_time) {
+	public void update(Animation animation, long actual_delta_time) {
 
 		elapsedTime += actual_delta_time;
 		updates++;
-
-		//escape ends this universe
-		if (keyboard.keyDownOnce(27)) {
-			complete = true;
-		}
 		
 		//spawn new UFO after a given # of updates
 		if (updates % ufo_frequency == 0) {
 			spawnUFOSprite();
 		}
 		
-		updateSprites(keyboard, actual_delta_time);
+		updateSprites(actual_delta_time);
 		wrapStraySprites();
 		disposeSprites();
 	}
 
-	 protected void updateSprites(KeyboardInput keyboard, long actual_delta_time) {
+	 protected void updateSprites(long actual_delta_time) {
 
 		 	if (player1.getAstronautsRescued() >= target) {
 				//end of game
@@ -128,7 +123,7 @@ public class Level01Universe implements Universe {
 			//update each sprite in turn
 			for (int i = 0; i < sprites.size(); i++) {
 				DisplayableSprite sprite = sprites.get(i);
-	    		sprite.update(this, keyboard, actual_delta_time);
+	    		sprite.update(this, actual_delta_time);
 	    	}    	
 	    }
 

@@ -95,7 +95,7 @@ public class UFOSprite implements DisplayableSprite {
 		this.dispose = true;
 	}
 
-	public void update(Universe universe, KeyboardInput keyboard, long actual_delta_time) {
+	public void update(Universe universe, long actual_delta_time) {
 
 		double deltaX = universe.getPlayer1().getCenterX() - this.getCenterX();
 		double deltaY = universe.getPlayer1().getCenterY() - this.getCenterY();

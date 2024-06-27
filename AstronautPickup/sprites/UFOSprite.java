@@ -96,9 +96,9 @@ public class UFOSprite implements DisplayableSprite {
 	}
 
 	public void update(Universe universe, long actual_delta_time) {
-
-		double deltaX = universe.getPlayer1().getCenterX() - this.getCenterX();
-		double deltaY = universe.getPlayer1().getCenterY() - this.getCenterY();
+		
+		double deltaX = ((Level01Universe)universe).getPlayer1().getCenterX() - this.getCenterX();
+		double deltaY = ((Level01Universe)universe).getPlayer1().getCenterY() - this.getCenterY();
 		double angleToTarget = Math.toDegrees(Math.atan((-deltaY) / deltaX)) + (deltaX < 0 ? 180 : 0);
 						
 		velocityX += Math.cos(Math.toRadians(angleToTarget)) * ACCELERATION * actual_delta_time * 0.001;

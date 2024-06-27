@@ -166,7 +166,7 @@ public class AstronautPickupFrame extends AnimationFrame {
 	
 	protected void updateControls() {
 		
-		SpaceShipSprite ship = (SpaceShipSprite)player1;
+		SpaceShipSprite ship = ((Level01Universe)universe).getPlayer1();
 		
 		this.lblTop.setText(String.format("Score: %8d  Rescued: %2d/%2d",AstronautPickupAnimation.getScore(), ship.getAstronautsRescued(), ((Level01Universe) universe).getTarget()));	
 		this.lblLevel.setText(String.format("Level: %3d",((AstronautPickupAnimation)animation).getLevel()));

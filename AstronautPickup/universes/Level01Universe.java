@@ -217,15 +217,14 @@ public class Level01Universe implements Universe {
 		this.complete = complete;
 	}
 
+	public SpaceShipSprite getPlayer1() {
+		return this.player1;
+	}
+
 	@Override
 	public ArrayList<Background> getBackgrounds() {
 		return backgrounds;
 	}	
-
-	@Override
-	public DisplayableSprite getPlayer1() {
-		return this.player1;
-	}
 
 	@Override
 	public ArrayList<DisplayableSprite> getSprites() {

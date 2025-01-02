@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
 import java.awt.Font;
 import javax.swing.SwingConstants;
 import java.awt.Color;
@@ -32,7 +33,7 @@ public class TitleFrame extends JDialog {
 		setType(Type.POPUP);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 365, 253);
+		setBounds(100, 100, 365, 600);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.BLACK);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -65,8 +66,34 @@ public class TitleFrame extends JDialog {
 		btnPlay.setOpaque(true);
 		btnPlay.setBackground(new Color(211, 211, 211));
 		btnPlay.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		btnPlay.setBounds(114, 185, 145, 41);
+		btnPlay.setBounds(114, 155, 145, 41);
 		contentPane.add(btnPlay);
+		
+		JLabel lblHighScores = new JLabel("High Scores");
+		lblHighScores.setVerticalAlignment(SwingConstants.TOP);
+		lblHighScores.setHorizontalAlignment(SwingConstants.CENTER);
+		lblHighScores.setForeground(Color.WHITE);
+		lblHighScores.setFont(new Font("Tahoma", Font.BOLD, 24));
+		lblHighScores.setBounds(0, 240, 369, 30);
+		contentPane.add(lblHighScores);
+
+		JTextArea lblHighScoreList = new JTextArea();
+		lblHighScoreList.setOpaque(false);
+		lblHighScoreList.setForeground(Color.WHITE);
+		lblHighScoreList.setFont(new Font(Font.MONOSPACED, Font.BOLD, 24));
+		lblHighScoreList.setBounds(0, 270, 369, 330);
+		contentPane.add(lblHighScoreList);
+		
+		String scores = "";
+		for (int i = 0; i <= HighScores.LIST_SIZE - 1; i++) {
+			NameAndScore score = HighScores.getHighScore(i);
+			if (score != null) {
+				String nameAndScore = String.format("  %5s%15d  ",score.getName(), score.getScore());
+				scores += nameAndScore + (i < HighScores.LIST_SIZE - 1 ? System.getProperty("line.separator") : "");
+			}
+		}
+		lblHighScoreList.setText(scores);
+
 	}
 	
 	protected void btnPlay_mouseClicked(MouseEvent e) {

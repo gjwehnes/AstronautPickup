@@ -142,22 +142,27 @@ public class AstronautPickupFrame extends AnimationFrame {
 				}
 			}
 			else {
-				int choice = JOptionPane.showOptionDialog(this,
-						"Spaceship go Boom. Play again?",
+				
+				stop = true;
+				
+				JOptionPane.showOptionDialog(this,
+						"Spaceship go Boom",
 								"Game Over",
-								JOptionPane.YES_NO_OPTION,
-								JOptionPane.QUESTION_MESSAGE,
+								JOptionPane.NO_OPTION,
+								JOptionPane.PLAIN_MESSAGE,
 								null,
 								null,
 								null);
-				
-				if (choice == 0) {
-					((AstronautPickupAnimation) animation).restart();
-					universe = animation.switchUniverse(null);
-					keyboard.poll();					
-				}
-				else {
-					stop = true;
+
+				int score = ((AstronautPickupAnimation) animation).getScore();
+				int rank = HighScores.getScoreRank(score);
+				if (rank >= 0) {
+					String name = JOptionPane.showInputDialog(this,
+							"You achieved a high score!",
+							"High Score",
+							JOptionPane.OK_OPTION);
+					name = name.length() <= 3 ? String.format("%3s", name): name.substring(0,3); 
+					HighScores.setHighScore(new NameAndScore(name, score));
 				}
 			}				
 		}

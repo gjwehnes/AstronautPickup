@@ -115,7 +115,7 @@ public class Level01Universe implements Universe {
 				complete = true;
 		 	}
 
-			if (player1.getHealth() < 0) {
+			if (player1.getHealth() <= 0) {
 				//end of game
 				complete = true;
 			}

@@ -250,9 +250,26 @@ public class SpaceShipSprite implements DisplayableSprite {
 		
 		if (reloadTime <= 0) {
 
+			/*
+			 * An example of how to convert a standard angle and distance into x and y coordinates.
+			 * Remember that the standard angle rotates clockwise, contrary to the mathematical 
+			 * definition (see SimpleSpriteUniverse). The angle does need to be converted to
+			 * radians, but the sine and cosine functions will work correctly with standard angles.
+			 * 
+			 * The cosine and sine function give the x and y coordinate for a circle of radius
+			 * 1. Thus, to include a magnitude (i.e. a movement for a given distance at a given angle),
+			 * we multiply the coordinates by the distance
+			 */
 			double angleInRadians = Math.toRadians(currentAngle);
-			double bulletVelocityX = Math.cos(angleInRadians) * BULLET_VELOCITY + velocityX;
-			double bulletVelocityY = Math.sin(angleInRadians) * BULLET_VELOCITY + velocityY;
+			double bulletVelocityX = Math.cos(angleInRadians) * BULLET_VELOCITY;
+			double bulletVelocityY = Math.sin(angleInRadians) * BULLET_VELOCITY;
+			
+			/*
+			 * As the bullet's absolute velocity is relative to the spaceship's velocity
+			 * add the latter to the former.
+			 */
+			bulletVelocityX += this.velocityX;
+			bulletVelocityY += this.velocityY;
 			
 			double bulletCurrentX = this.getCenterX();
 			double bulletCurrentY = this.getCenterY();

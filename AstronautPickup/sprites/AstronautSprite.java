@@ -61,7 +61,7 @@ public class AstronautSprite implements DisplayableSprite, MovableSprite {
 	//DISPLAYABLE
 	
 	public Image getImage() {
-		return rotatedImages[(int)currentAngle % 360];
+		return rotatedImages[(int)Math.abs(currentAngle) % 360];
 	}
 	
 	public boolean getVisible() {

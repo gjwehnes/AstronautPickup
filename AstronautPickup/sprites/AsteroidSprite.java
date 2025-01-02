@@ -56,7 +56,7 @@ public class AsteroidSprite implements DisplayableSprite, MovableSprite {
 	
 	//DISPLAYABLE
 	public Image getImage() {
-		return rotatedImages[(int)currentAngle];
+		return rotatedImages[(int)Math.abs(currentAngle) % 360];
 	}
 	
 	public boolean getVisible() {

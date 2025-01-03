@@ -60,7 +60,7 @@ public class SpaceShipSprite implements DisplayableSprite {
 	//DISPLAYABLE
 	
 	public Image getImage() {
-		return rotatedImages[(int)Math.abs(currentAngle) % 360];
+		return rotatedImages[Math.floorMod((int)currentAngle, 360)];
 	}
 	
 	public Image getImage(int angle) {

@@ -2,9 +2,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/*
+ * An example of how you can save ('persist') data between runs of an application using the file
+ * system. Serialization is used to simplify the process of saving and loading
+ */
+
 public class HighScores {
 
-	// score is zero-indexed
+	// score is zero-indexed; an index of -1 indicates that a score does not rank
 	
 	protected final static String SCORES_FILE_PATH = "res/high-scores/scores.bin";
 	public final static int LIST_SIZE = 10;
@@ -19,6 +24,7 @@ public class HighScores {
 		}
 	
 	}
+	
 	private static void load() {
 		try {
 			scores = (NameAndScore[]) Serializer.deserialize(SCORES_FILE_PATH);
@@ -26,6 +32,10 @@ public class HighScores {
 			System.out.println(e.getMessage());						
 		}		
 
+		/*
+		 * if somehow the deserialization does not work properly (or if the file does not exist),
+		 * create a blank list of high scores
+		 */
 		if (scores == null || scores.length != LIST_SIZE) {
 			scores = new NameAndScore[LIST_SIZE];
 		}

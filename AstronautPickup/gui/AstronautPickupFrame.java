@@ -102,7 +102,7 @@ public class AstronautPickupFrame extends AnimationFrame {
 		
 	protected void animationStart() {
 		
-		System.out.println("AnimationFrame.animationStart");
+		System.out.println("AstronautPickupFrame.animationStart");
 		//hide interface
 		this.setVisible(false);
 		titleFrame = new TitleFrame();
@@ -114,16 +114,20 @@ public class AstronautPickupFrame extends AnimationFrame {
 		//by setting the dialog to visible, the application will start running the dialog
 		titleFrame.setVisible(true);
 		
-		//when title screen has been closed, execution will resume here.
+		if (titleFrame.getWindowClosed()) {
+			this.stop = true;
+			this.windowClosed = true;
+		}
 		titleFrame.dispose();
-		this.setVisible(true);
+
+		//		this.setVisible(true);
 		
 	}
 
 	@Override
 	protected void universeSwitched() {
 				
-		System.out.println("AnimationFrame.universeSwitched");
+		System.out.println("AstronautPickupFrame.universeSwitched");
 
 		if (universe.isComplete()) {
 			

@@ -17,19 +17,22 @@ import javax.swing.UIManager;
 import javax.swing.JRadioButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class TitleFrame extends JDialog {
 
 	private JPanel contentPane;
+	private boolean windowClosed;
 
 	/**
 	 * Create the frame.
 	 */
 	public TitleFrame() {
 		
-		this.setUndecorated(true);
+//		this.setUndecorated(true);
 		this.setBackground(Color.BLUE);
-		
+//		
 		setType(Type.POPUP);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -80,10 +83,13 @@ public class TitleFrame extends JDialog {
 		JTextArea lblHighScoreList = new JTextArea();
 		lblHighScoreList.setOpaque(false);
 		lblHighScoreList.setForeground(Color.WHITE);
-		lblHighScoreList.setFont(new Font(Font.MONOSPACED, Font.BOLD, 24));
+		lblHighScoreList.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
 		lblHighScoreList.setBounds(0, 270, 369, 330);
 		contentPane.add(lblHighScoreList);
 		
+		/*
+		 * Code for displaying a list of high scores
+		 */
 		String scores = "";
 		for (int i = 0; i <= HighScores.LIST_SIZE - 1; i++) {
 			NameAndScore score = HighScores.getHighScore(i);
@@ -93,10 +99,27 @@ public class TitleFrame extends JDialog {
 			}
 		}
 		lblHighScoreList.setText(scores);
-
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				this_windowClosing(e);
+			}
+		});
+		
 	}
 	
+	protected void this_windowClosing(WindowEvent e) {
+		System.out.println("AnimationFrame.windowClosing()");
+		this.windowClosed = true;				
+	}
+
 	protected void btnPlay_mouseClicked(MouseEvent e) {
+		this.windowClosed = false;
 		this.setVisible(false);
 	}
+	
+	public boolean getWindowClosed() {
+		return windowClosed;
+	}
+	
 }

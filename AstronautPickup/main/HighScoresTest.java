@@ -9,6 +9,16 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/*
+ * As part of good development practice, a unit test is often included within a project to test (and
+ * retest) low-level algorithms. A high score mechanism saved to file is a good example - simple in concept,
+ * but with multiple edge cases (e.g. what if file does not exist, what if score does not rank, etc).
+ * 
+ * This test is not run as part of the regular execution of the program, but can (and should be) re-run
+ * whenever a change is made to the high score mechanism, or if this program is being tested to run on a
+ * different operating system (where the saving to file may not work, e.g. for lack of priviliges)
+ */
+
 class HighScoresTest {
 
 	@Test

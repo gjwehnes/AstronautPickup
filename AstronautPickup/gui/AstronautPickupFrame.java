@@ -18,7 +18,6 @@ public class AstronautPickupFrame extends AnimationFrame {
 	final public static int SCREEN_WIDTH = 900;
 
 	private TitleFrame titleFrame = null;
-
 	private JLabel lblLevel;	
 	private JLabel lblAmmoLabel;	
 	private JLabel lblHealthLabel;	
@@ -115,7 +114,10 @@ public class AstronautPickupFrame extends AnimationFrame {
 		titleFrame.setVisible(true);
 		
 		if (titleFrame.getWindowClosed()) {
-			this.stop = true;
+			// if this frame was closed by user, end the application, including
+			// all other frames
+			this.stopApplication = true;
+			this.stopAnimation = true;
 			this.windowClosed = true;
 		}
 		titleFrame.dispose();
@@ -142,17 +144,15 @@ public class AstronautPickupFrame extends AnimationFrame {
 				else {
 					JOptionPane.showMessageDialog(this,
 							"You have beaten the game... Congratulations!");
-					stop = true;
+					stopAnimation = true;
 				}
 			}
 			else {
-				
-				stop = true;
-				
+								
 				JOptionPane.showOptionDialog(this,
 						"Spaceship go Boom",
 								"Game Over",
-								JOptionPane.NO_OPTION,
+								JOptionPane.CLOSED_OPTION,
 								JOptionPane.PLAIN_MESSAGE,
 								null,
 								null,
@@ -168,6 +168,9 @@ public class AstronautPickupFrame extends AnimationFrame {
 					name = name.length() <= 3 ? String.format("%3s", name): name.substring(0,3); 
 					HighScores.setHighScore(new NameAndScore(name, score));
 				}
+				
+				stopAnimation = true;
+
 			}				
 		}
 				
@@ -187,6 +190,14 @@ public class AstronautPickupFrame extends AnimationFrame {
 		setBarLabelBounds(this.lblHealth, ship.getHealth());
 	}
 
-
+	protected void handleKeyboardInput() {
+		super.handleKeyboardInput();
+		if (keyboard.keyDown(KeyboardInput.KEY_Q) && ! isPaused) {
+//			stop = true;
+//			animation.setComplete(true);
+			SpaceShipSprite ship = ((Level01Universe)universe).getPlayer1();
+			ship.setHealth(0);
+		}		
+	}
 		
 }

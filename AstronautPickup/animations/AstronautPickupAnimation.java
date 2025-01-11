@@ -5,7 +5,7 @@ public class AstronautPickupAnimation implements Animation {
 	private Universe current = null;
 	private static int score = 0;
 	private boolean universeSwitched = false;
-	private boolean animationComplete;
+	private boolean end;
 
 	public AstronautPickupAnimation() {
 		switchUniverse(null);
@@ -42,7 +42,7 @@ public class AstronautPickupAnimation implements Animation {
 			this.current = new Level01Universe(20,10,50,500);
 		}
 		else {
-			this.animationComplete = true;
+			this.current = null;
 		}
 		
 		return this.current;
@@ -71,12 +71,12 @@ public class AstronautPickupAnimation implements Animation {
 
 	@Override
 	public boolean isComplete() {
-		return animationComplete;
+		return end;
 	}
 
 	@Override
 	public void setComplete(boolean complete) {
-		this.animationComplete = complete;		
+		this.end = complete;		
 	}
 
 	@Override

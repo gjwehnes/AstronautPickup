@@ -14,9 +14,9 @@ import java.awt.event.MouseMotionAdapter;
 
 public class AstronautPickupFrame extends AnimationFrame {
 	
-	final public static int SCREEN_HEIGHT = 750;
-	final public static int SCREEN_WIDTH = 900;
-
+	protected static final int STANDARD_SCREEN_HEIGHT = 800;
+	protected static final int STANDARD_SCREEN_WIDTH = 1200;
+	
 	private TitleFrame titleFrame = null;
 	private JLabel lblLevel;	
 	private JLabel lblAmmoLabel;	
@@ -33,19 +33,16 @@ public class AstronautPickupFrame extends AnimationFrame {
 		lblLevel = new JLabel("");
 		lblLevel.setForeground(Color.YELLOW);
 		lblLevel.setFont(new Font("Tahoma", Font.BOLD, 30));
-		lblLevel.setBounds(690, 20, 192, 30);
 		getContentPane().add(lblLevel);
 		getContentPane().setComponentZOrder(lblLevel, 0);
 		
 		lblAmmoLabel = new JLabel("Ammo:");
 		lblAmmoLabel.setForeground(Color.WHITE);
 		lblAmmoLabel.setFont(new Font("Tahoma", Font.BOLD, 30));
-		lblAmmoLabel.setBounds(20, SCREEN_HEIGHT - 98, 152, 30);
 		getContentPane().add(lblAmmoLabel);
 		getContentPane().setComponentZOrder(lblAmmoLabel, 0);
 		
 		lblAmmo = new JLabel("95");
-		lblAmmo.setBounds(190, SCREEN_HEIGHT - 90, 100,14);
 		setBarLabelBounds(this.lblAmmo, 100);
 		lblAmmo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblAmmo.setOpaque(true);
@@ -57,12 +54,10 @@ public class AstronautPickupFrame extends AnimationFrame {
 		lblHealthLabel = new JLabel("Health");
 		lblHealthLabel.setForeground(Color.WHITE);
 		lblHealthLabel.setFont(new Font("Tahoma", Font.BOLD, 30));
-		lblHealthLabel.setBounds(20, SCREEN_HEIGHT - 57, 152, 30);
 		getContentPane().add(lblHealthLabel);
 		getContentPane().setComponentZOrder(lblHealthLabel, 0);
 		
 		lblHealth = new JLabel("5");
-		lblHealth.setBounds(190, SCREEN_HEIGHT - 49, 100,14);
 		lblHealth.setHorizontalAlignment(SwingConstants.CENTER);
 		lblHealth.setOpaque(true);
 		lblHealth.setForeground(Color.BLACK);
@@ -74,12 +69,10 @@ public class AstronautPickupFrame extends AnimationFrame {
 		lblFuelLabel = new JLabel("Fuel:");
 		lblFuelLabel.setForeground(Color.WHITE);
 		lblFuelLabel.setFont(new Font("Tahoma", Font.BOLD, 30));
-		lblFuelLabel.setBounds(20, SCREEN_HEIGHT - 139, 152, 30);
 		getContentPane().add(lblFuelLabel);
 		getContentPane().setComponentZOrder(lblFuelLabel, 0);
 		
 		lblFuel = new JLabel("80");
-		lblFuel.setBounds(190, SCREEN_HEIGHT - 131, 100,14);
 		lblFuel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblFuel.setBackground(Color.GREEN);
 		lblFuel.setForeground(Color.BLACK);
@@ -89,12 +82,30 @@ public class AstronautPickupFrame extends AnimationFrame {
 		getContentPane().setComponentZOrder(lblFuel, 0);
 
 	}
+	
+	protected void repositionComponents() {
+		//call the super class's version of this method so it can also resize the
+		//components it controls
+		super.repositionComponents();
+		
+		if (lblFuel != null) {
+			lblLevel.setBounds(690, 20, 192, 30);
+			lblAmmoLabel.setBounds(20, screenHeight - 98, 152, 30);
+			lblAmmo.setBounds(190, screenHeight - 90, 100,14);
+			lblHealthLabel.setBounds(20, screenHeight - 57, 152, 30);
+			lblHealth.setBounds(190, screenHeight - 49, 100,14);
+			lblFuelLabel.setBounds(20, screenHeight - 139, 152, 30);
+			lblFuel.setBounds(190, screenHeight - 131, 100,14);		
+		}
+		
+	}
+	
 
 	private void setBarLabelBounds(JLabel label, double percent) {
 
 		int minX = 189;
 		int minY = label.getY();
-		int maxX = this.getWidth() - 32;
+		int maxX = screenWidth - 32;
 		
 		label.setBounds(minX, minY,(int)(minX + (maxX - minX) * percent / 100) - minX, 14);
 	}
@@ -124,7 +135,7 @@ public class AstronautPickupFrame extends AnimationFrame {
 		//		this.setVisible(true);
 		
 	}
-
+		
 	@Override
 	protected void universeSwitched() {
 				

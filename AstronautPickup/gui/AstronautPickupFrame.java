@@ -114,8 +114,7 @@ public class AstronautPickupFrame extends AnimationFrame {
 		titleFrame.setVisible(true);
 		
 		if (titleFrame.getWindowClosed()) {
-			// if this frame was closed by user, end the application, including
-			// all other frames
+			// if the title frame was closed by user, end the application completely
 			this.stopApplication = true;
 			this.stopAnimation = true;
 			this.windowClosed = true;

@@ -7,6 +7,7 @@ public class AstronautPickupMain {
 		
 		while (stopApplication == false) {
 			
+			System.out.println("AstronautPickupMain.start");
 			AstronautPickupAnimation animation = new AstronautPickupAnimation();
 			AstronautPickupFrame frame = new AstronautPickupFrame((Animation)animation);
 			frame.start();
@@ -22,6 +23,7 @@ public class AstronautPickupMain {
 			stopApplication = frame.getStopApplication(); 
 			frame.setVisible(false);
 			frame = null;
+			System.out.println("AstronautPickupMain.stop");
 						
 		}
 							

@@ -184,7 +184,7 @@ public class SpaceShipSprite implements DisplayableSprite {
 			}
 		}
 		//SPACE
-		if (keyboard.keyDown(32) && this.ammo > 0) {
+		if (keyboard.keyDown(KeyboardInput.KEY_X) && this.ammo > 0) {
 			shoot(universe);	
 		}
 
